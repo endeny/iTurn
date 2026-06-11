@@ -1,0 +1,27 @@
+{
+  "name": "source-runtime-lab",
+  "version": "0.1.1",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "bun run src/dev.ts",
+    "dev:server": "bun --watch src/server.ts",
+    "dev:web": "vite --config web/vite.config.ts --host 0.0.0.0",
+    "server": "bun src/server.ts",
+    "web": "vite --config web/vite.config.ts --host 0.0.0.0",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@vitejs/plugin-react": "latest",
+    "vite": "latest",
+    "typescript": "latest",
+    "react": "latest",
+    "react-dom": "latest"
+  },
+  "devDependencies": {
+    "@types/react": "latest",
+    "@types/react-dom": "latest",
+    "@types/node": "latest",
+    "bun-types": "latest"
+  }
+}
