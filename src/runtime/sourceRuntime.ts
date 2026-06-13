@@ -3,7 +3,6 @@ import type {
   RuntimeEnv,
   SourceContext,
   SourceManifest,
-  SourceModule,
   SourceStage,
   SourceTrace,
 } from '@source/sdk'
@@ -24,19 +23,20 @@ export interface RuntimeCallOutput<TResult = unknown> {
 export class SourceRuntime {
   private storage = new MemoryKV()
   private secret = new MemoryKV()
+  private config = new MemoryKV()
   private cache = new MemoryCache()
   private cookie = new MemoryCookieStore()
 
   constructor(
-    private readonly sourceModule: SourceModule & { manifest: SourceManifest },
+    private readonly sourceManifest: SourceManifest,
   ) {}
 
   get manifest() {
-    return this.sourceModule.manifest
+    return this.sourceManifest
   }
 
   async call<TArgs = unknown, TResult = unknown>(input: RuntimeCallInput<TArgs>): Promise<RuntimeCallOutput<TResult>> {
-    const exported = this.sourceModule[input.name]
+    const exported = this.sourceManifest.module[input.name]
     if (typeof exported !== 'function') {
       throw new Error(`Export not found: ${input.name}`)
     }
@@ -47,6 +47,7 @@ export class SourceRuntime {
     const previousFetch = globalThis.fetch
 
     const traceLog = (level: 'debug' | 'info' | 'warn' | 'error', args: unknown[]) => {
+      console.log(`[${level.toUpperCase()}]`, ...args)
       logs.push({
         level,
         message: args.map((x) => typeof x === 'string' ? x : JSON.stringify(x)).join(' '),
@@ -64,12 +65,14 @@ export class SourceRuntime {
         settings: {
           ...defaultSettings(this.manifest),
           ...(input.settings ?? {}),
+          ...this.config.snapshot(),
         },
       },
       env: runtimeEnv(),
       args: input.args,
       storage: this.storage,
       secret: this.secret,
+      config: this.config,
       cache: this.cache,
       cookie: this.cookie,
       browser: {

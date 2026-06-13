@@ -96,21 +96,23 @@ declare module '@source/sdk' {
      */
     entry: string
 
-    /**
-     * Exported function mapping.
-     *
-     * Values are exported function names in entry module.
-     */
-    exports: SourceExports
-
     permissions?: SourcePermissions
     settings?: SourceSetting[]
+    settingsPage?: SettingsPageDeclaration
     login?: LoginDeclaration
     limits?: SourceLimits
     dependencies?: SourceDependency[]
     compatibility?: CompatibilityDeclaration
     update?: SourceUpdateDeclaration
     match?: SourceMatchDeclaration
+
+    /**
+     * Strongly typed runtime capabilities implemented by this source.
+     *
+     * A source file should export SourceManifest as its only public shape:
+     * `export default source satisfies SourceManifest`.
+     */
+    module: SourceModule
   }
 
   export type SourceContentType =
@@ -119,30 +121,6 @@ declare module '@source/sdk' {
     | 'audio'
     | 'video'
     | 'mixed'
-
-  export interface SourceExports {
-    explore?: string
-    search?: string
-    bookInfo?: string
-    toc?: string
-    content?: string
-
-    image?: string
-    audio?: string
-    download?: string
-
-    login?: string
-    logout?: string
-    checkLogin?: string
-
-    onInstall?: string
-    onUpdate?: string
-
-    /**
-     * Custom exported functions.
-     */
-    [customExportName: string]: string | undefined
-  }
 
   export interface SourcePermissions {
     /**
@@ -234,6 +212,9 @@ declare module '@source/sdk' {
    * Source Module
    * ============================================================
    *
+   * Runtime entry points embedded in SourceManifest.module.
+   * This strong type is both validation and source-author documentation.
+   *
    * All entry functions receive SourceContext<TArgs>.
    * Entry-specific arguments are carried by ctx.args.
    */
@@ -252,6 +233,7 @@ declare module '@source/sdk' {
     login?(ctx: LoginContext): MaybePromise<LoginResult>
     logout?(ctx: LogoutContext): MaybePromise<void>
     checkLogin?(ctx: CheckLoginContext): MaybePromise<LoginStatus>
+    settingsPage?(ctx: SettingsPageContext): MaybePromise<SourceActionResult | void>
 
     onInstall?(ctx: InstallContext): MaybePromise<void>
     onUpdate?(ctx: UpdateContext): MaybePromise<void>
@@ -330,6 +312,11 @@ declare module '@source/sdk' {
     secret: SecretAPI
 
     /**
+     * Source configuration shared by the source settings page and runtime logic.
+     */
+    config: ConfigAPI
+
+    /**
      * Temporary source-scoped cache.
      */
     cache: CacheAPI
@@ -351,6 +338,7 @@ declare module '@source/sdk' {
     id: SourceId
     name: string
     version: string
+    icon?: string
     baseUrl?: string
 
     /**
@@ -463,6 +451,7 @@ declare module '@source/sdk' {
   export type LoginContext = SourceContext<LoginArgs>
   export type LogoutContext = SourceContext<LogoutArgs>
   export type CheckLoginContext = SourceContext<CheckLoginArgs>
+  export type SettingsPageContext = SourceContext<SettingsPageArgs>
 
   export type InstallContext = SourceContext<InstallArgs>
   export type UpdateContext = SourceContext<UpdateArgs>
@@ -549,6 +538,10 @@ declare module '@source/sdk' {
 
   export interface CheckLoginArgs {
     method?: string
+    payload?: Record<string, unknown>
+  }
+
+  export interface SettingsPageArgs {
     payload?: Record<string, unknown>
   }
 
@@ -963,7 +956,7 @@ declare module '@source/sdk' {
     type: 'run'
 
     /**
-     * Exported function name declared in manifest.exports or available in module.
+     * Function name available on SourceModule.
      */
     name: string
 
@@ -1007,6 +1000,10 @@ declare module '@source/sdk' {
     | ColorSetting
     | ButtonSetting
     | GroupSetting
+
+  export interface SettingsPageDeclaration {
+    title?: string
+  }
 
   export interface BaseSetting {
     key: string
@@ -1137,6 +1134,13 @@ declare module '@source/sdk' {
     extra?: Record<string, unknown>
   }
 
+  export interface SourceActionResult {
+    success?: boolean
+    loggedIn?: boolean
+    message?: string
+    extra?: Record<string, unknown>
+  }
+
   /**
    * ============================================================
    * App-specific Host APIs
@@ -1153,6 +1157,13 @@ declare module '@source/sdk' {
   export interface SecretAPI {
     get(key: string): Promise<string | null>
     set(key: string, value: string): Promise<void>
+    remove(key: string): Promise<void>
+    clear?(): Promise<void>
+  }
+
+  export interface ConfigAPI {
+    get<T = unknown>(key: string): Promise<T | null>
+    set<T = unknown>(key: string, value: T): Promise<void>
     remove(key: string): Promise<void>
     clear?(): Promise<void>
   }
@@ -1265,6 +1276,7 @@ declare module '@source/sdk' {
     | 'login'
     | 'logout'
     | 'checkLogin'
+    | 'settingsPage'
     | 'custom'
 
   export type SourceErrorCode =
@@ -1326,21 +1338,33 @@ declare module '@source/sdk' {
 /**
  * Optional single-file source plugin shape:
  *
- * import type { SourceManifest, SearchContext, SearchResult } from '@source/sdk'
+ * import type { SearchContext, SearchResult, SourceManifest, SourceModule } from '@source/sdk'
  *
- * export const manifest: SourceManifest = { ... }
+ * const module: SourceModule = {
+ *   async search(ctx: SearchContext): Promise<SearchResult> {
+ *     const { keyword, page } = ctx.args
+ *     const url = new URL('/search', ctx.source.baseUrl)
+ *     url.searchParams.set('key', keyword)
+ *     url.searchParams.set('page', String(page))
  *
- * export async function search(ctx: SearchContext): Promise<SearchResult> {
- *   const { keyword, page } = ctx.args
- *   const url = new URL('/search', ctx.source.baseUrl)
- *   url.searchParams.set('key', keyword)
- *   url.searchParams.set('page', String(page))
+ *     const res = await fetch(url)
+ *     const json = await res.json()
  *
- *   const res = await fetch(url)
- *   const json = await res.json()
- *
- *   return { books: ... }
+ *     return { books: ... }
+ *   },
  * }
+ *
+ * const source: SourceManifest = {
+ *   schemaVersion: 1,
+ *   id: 'example.source',
+ *   name: 'Example Source',
+ *   version: '1.0.0',
+ *   type: 'novel',
+ *   entry: 'example.ts',
+ *   module,
+ * }
+ *
+ * export default source
  */
 
 export {}

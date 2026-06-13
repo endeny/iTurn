@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useState } from 'react'
 import { createRoot } from 'react-dom/client'
 
 type RuntimeOutput<T = any> = { result: T; trace: any }
-type Manifest = { id: string; name: string; version: string; settings?: any[]; exports?: Record<string, string> }
+type Manifest = { id: string; name: string; version: string; settings?: any[] }
 type BookRef = { id?: string; sourceId: string; name: string; author?: string; bookUrl: string; cover?: string; intro?: string; kind?: string[]; extra?: any }
 type Chapter = { id?: string; sourceId: string; name: string; chapterUrl: string; index?: number; volumeName?: string; extra?: any }
 type ContentResult = { title?: string; format: 'text' | 'html' | 'blocks'; content: any }
@@ -112,7 +112,7 @@ function App() {
     return <input type={setting.type === 'password' || setting.type === 'token' ? 'password' : setting.type === 'number' ? 'number' : setting.type === 'color' ? 'color' : 'text'} value={value ?? ''} placeholder={setting.placeholder ?? ''} onChange={(e) => setSettings({ ...settings, [setting.key]: e.target.value })} />
   }
 
-  const can = (name: string) => !!manifest?.exports?.[name]
+  const can = (name: string) => !!manifest && ['search', 'explore', 'bookInfo', 'toc', 'content'].includes(name)
 
   return <div className="app">
     <div className="header">

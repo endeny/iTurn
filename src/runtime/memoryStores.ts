@@ -18,6 +18,10 @@ export class MemoryKV {
   async clear(): Promise<void> {
     this.values.clear()
   }
+
+  snapshot(): Record<string, unknown> {
+    return Object.fromEntries(this.values)
+  }
 }
 
 export class MemoryCache {

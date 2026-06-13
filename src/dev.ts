@@ -21,3 +21,5 @@ process.on('SIGINT', shutdown)
 process.on('SIGTERM', shutdown)
 
 await Promise.all(children.map((child) => child.exited))
+
+export {}

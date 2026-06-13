@@ -1,6 +1,6 @@
-# Source Runtime Lab - 9 Legado Sources
+# iTurn 书源运行测试环境
 
-这是一个 Bun + Vite + React 的书源运行测试环境。目标是在不公开 App / Swift runtime 源码的情况下，让数据源作者测试新协议书源。
+这是一个 Bun + Vite + React 的书源运行测试环境。目标帮助数据源作者调试iTurn协议书源。
 
 本版本把你提供的 Legado JSON 里的 9 个书源全部迁移成新协议模块：
 
@@ -31,6 +31,58 @@ API：
 
 ```text
 http://localhost:8787
+```
+
+## 打包书源
+
+书源源码放在 `src/sources/*.ts`，通用 helper 放在 `src/helpers/`。`src/sources` 目录只放实际书源文件，每个书源文件会打包成一个可被 iTurn 导入的单文件 JS：
+
+```bash
+bun run build:sources
+```
+
+输出目录：
+
+```text
+dist/sources/*.js
+```
+
+也可以只打包指定书源，参数使用文件名或不带扩展名的 source name：
+
+```bash
+bun run build:sources qimaoJh
+bun run build:sources qimaoJh.ts fanqieFqgo.ts
+```
+
+打包产物会设置 `globalThis.__sourceModule`，并把 manifest 的 `entry` 改成对应的 `.js` 文件名，因此可以直接在 iTurn 书源管理页面选择导入。
+
+## 打包 URL 订阅
+
+可以把 `dist/sources/*.js` 生成 iTurn URL 订阅 JSON。需要传入这些 JS 文件部署后的 URL 前缀：
+
+```bash
+bun run build:subscription -- --prefix https://example.com/iturn/sources
+```
+
+输出：
+
+```text
+dist/subscription.json
+```
+
+订阅格式：
+
+```json
+[
+  { "name": "七猫小说（JH 迁移版）", "source": "https://example.com/iturn/sources/qimaoJh.js", "kind": "iturn", "comment": "Legado, 七猫, JH" }
+]
+```
+
+也可以只生成部分书源，或通过环境变量设置前缀：
+
+```bash
+bun run build:subscription -- --prefix https://example.com/iturn/sources qimaoJh fanqieFqgo
+ITURN_SOURCE_PREFIX=https://example.com/iturn/sources bun run build:subscription
 ```
 
 ## API

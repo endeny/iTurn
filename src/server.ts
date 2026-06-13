@@ -1,17 +1,22 @@
 import { readFile } from 'node:fs/promises'
 import { join } from 'node:path'
-import { getSourceModule, sourceModules } from './sources/index.ts'
+import { getSourceManifest, sourceManifests } from './sourceRegistry.ts'
 import { SourceRuntime } from './runtime/sourceRuntime.ts'
 
 const runtimeCache = new Map<string, SourceRuntime>()
 const root = new URL('..', import.meta.url).pathname
 
+function publicManifest(source: ReturnType<typeof getSourceManifest>) {
+  const { module: _, ...manifest } = source
+  return manifest
+}
+
 function runtimeFor(sourceId?: string) {
-  const source = getSourceModule(sourceId)
-  let runtime = runtimeCache.get(source.manifest.id)
+  const source = getSourceManifest(sourceId)
+  let runtime = runtimeCache.get(source.id)
   if (!runtime) {
     runtime = new SourceRuntime(source)
-    runtimeCache.set(source.manifest.id, runtime)
+    runtimeCache.set(source.id, runtime)
   }
   return runtime
 }
@@ -28,8 +33,8 @@ async function readBody(request: Request) {
 }
 
 async function serveSourceFile(sourceId?: string) {
-  const source = getSourceModule(sourceId)
-  const file = join(root, 'src', 'sources', source.manifest.entry)
+  const source = getSourceManifest(sourceId)
+  const file = join(root, 'src', 'sources', source.entry)
   return new Response(await readFile(file, 'utf8'), { headers: { 'content-type': 'text/plain; charset=utf-8' } })
 }
 
@@ -39,10 +44,10 @@ const server = Bun.serve({
     const url = new URL(request.url)
     try {
       if (url.pathname === '/api/sources') {
-        return json(sourceModules.map((source) => source.manifest))
+        return json(sourceManifests.map(publicManifest))
       }
       if (url.pathname === '/api/manifest') {
-        return json(runtimeFor(url.searchParams.get('sourceId') || undefined).manifest)
+        return json(publicManifest(runtimeFor(url.searchParams.get('sourceId') || undefined).manifest))
       }
       if (url.pathname === '/api/source') {
         return serveSourceFile(url.searchParams.get('sourceId') || undefined)
