@@ -9,6 +9,7 @@
     "dev:web": "vite --config web/vite.config.ts --host 0.0.0.0",
     "server": "bun src/server.ts",
     "web": "vite --config web/vite.config.ts --host 0.0.0.0",
+    "build:runtime-shim": "bun run scripts/build-runtime-shim.ts",
     "build:sources": "bun run scripts/build-sources.ts",
     "build:subscription": "bun run scripts/build-subscription.ts",
     "typecheck": "tsc --noEmit"
