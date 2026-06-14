@@ -4,7 +4,7 @@
 
 # 使用方式
 
-复制链接 `https://endeny.github.io/iTurn/subscription.json`，粘贴到iTurn的书源管理页面的书源链接输入框中；或者点击[此处](iturn://subscription?action=import&name=GitHub订阅&url=https://endeny.github.io/iTurn/subscription.json)添加到iTurn订阅。
+复制链接 `https://endeny.github.io/iTurn/subscription.json`，粘贴到iTurn的书源管理页面的书源链接输入框中；或者点击<a href="iturn://subscription?action=import&name=GitHub订阅&url=https://endeny.github.io/iTurn/subscription.json">此处</a>添加到iTurn订阅。
 
 本仓库将网络收集的 Legado JSON 里的 9 个书源全部迁移成新协议模块：
 
