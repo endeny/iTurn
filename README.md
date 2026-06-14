@@ -2,7 +2,11 @@
 
 这是一个 Bun + Vite + React 的书源运行测试环境。目标帮助数据源作者调试iTurn协议书源。
 
-本版本把你提供的 Legado JSON 里的 9 个书源全部迁移成新协议模块：
+# 使用方式
+
+复制链接 `https://endeny.github.io/iTurn/subscription.json`，粘贴到iTurn的书源管理页面的书源链接输入框中；或者点击[此处](iturn://subscription?action=import&name=GitHub订阅&url=https://endeny.github.io/iTurn/subscription.json)添加到iTurn订阅。
+
+本仓库将网络收集的 Legado JSON 里的 9 个书源全部迁移成新协议模块：
 
 1. 七猫小说（JH 迁移版）
 2. 书旗小说（JH 迁移版）
