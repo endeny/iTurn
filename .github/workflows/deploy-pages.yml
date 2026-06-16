@@ -29,7 +29,9 @@ jobs:
         run: bun ci
 
       - name: Build site
-        run: bun run build:subscription -- --prefix https://endeny.github.io/iTurn/sources
+        run: |
+          bun run build:subscription -- --prefix https://endeny.github.io/iTurn/sources
+          cp README.md dist/
 
       - name: Deploy dist to gh-pages
         uses: peaceiris/actions-gh-pages@v4
