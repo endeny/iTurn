@@ -1,0 +1,56 @@
+[
+  {
+    "name": "✿番茄四合一（知秋段评）迁移版✿",
+    "source": "https://endeny.github.io/iTurn/sources/fanqieFourInOne.js",
+    "kind": "iturn",
+    "comment": "Legado, 番茄, 四合一"
+  },
+  {
+    "name": "番茄小说（fqgo 迁移版）",
+    "source": "https://endeny.github.io/iTurn/sources/fanqieFqgo.js",
+    "kind": "iturn",
+    "comment": "Legado, 番茄, 本地版"
+  },
+  {
+    "name": "番茄-明月（迁移版）",
+    "source": "https://endeny.github.io/iTurn/sources/fanqieMingyue.js",
+    "kind": "iturn",
+    "comment": "Legado, 番茄, 明月"
+  },
+  {
+    "name": "🔅光遇聚合（迁移版）",
+    "source": "https://endeny.github.io/iTurn/sources/guangyu.js",
+    "kind": "iturn",
+    "comment": "Legado, 聚合, 番茄, 七猫, 书旗"
+  },
+  {
+    "name": "69-明月（迁移版）",
+    "source": "https://endeny.github.io/iTurn/sources/my69Mingyue.js",
+    "kind": "iturn",
+    "comment": "Legado, 69, 明月, 起点"
+  },
+  {
+    "name": "七猫小说（JH 迁移版）",
+    "source": "https://endeny.github.io/iTurn/sources/qimaoJh.js",
+    "kind": "iturn",
+    "comment": "Legado, 七猫, JH"
+  },
+  {
+    "name": "七猫-明月（迁移版）",
+    "source": "https://endeny.github.io/iTurn/sources/qimaoMingyue.js",
+    "kind": "iturn",
+    "comment": "Legado, 七猫, 明月"
+  },
+  {
+    "name": "书旗小说（JH 迁移版）",
+    "source": "https://endeny.github.io/iTurn/sources/shuqiJh.js",
+    "kind": "iturn",
+    "comment": "Legado, 书旗, JH"
+  },
+  {
+    "name": "xi~番茄 v3.0.0（迁移修正版）",
+    "source": "https://endeny.github.io/iTurn/sources/xiFanqie.js",
+    "kind": "iturn",
+    "comment": "Legado, 番茄, xi, 阅读"
+  }
+]
